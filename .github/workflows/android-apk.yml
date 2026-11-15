@@ -42,6 +42,8 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-linux-android
+      - name: Install compatible npm
+        run: npm install --global npm@11.19.0
       - name: Install frontend dependencies
         working-directory: frontend
         run: npm ci
