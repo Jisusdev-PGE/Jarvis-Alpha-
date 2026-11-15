@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router';
 import { ArrowRight, Search, Sparkles } from 'lucide-react';
 import { useAppStore } from '../lib/store';
@@ -7,7 +8,7 @@ export function SearchPage() {
   const [query, setQuery] = useState('');
   const navigate = useNavigate();
 
-  const submit = (event: React.FormEvent<HTMLFormElement>) => {
+  const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const trimmed = query.trim();
     if (!trimmed) return;
