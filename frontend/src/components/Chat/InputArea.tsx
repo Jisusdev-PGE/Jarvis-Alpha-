@@ -81,6 +81,15 @@ function useResearchCorpusSync(enabled: boolean): {
 
 export function InputArea() {
   const [input, setInput] = useState('');
+
+  // Pick up a search submitted from the dedicated Search screen.
+  useEffect(() => {
+    const pendingSearch = localStorage.getItem('jarvis-alpha-pending-search');
+    if (!pendingSearch) return;
+    localStorage.removeItem('jarvis-alpha-pending-search');
+    useAppStore.getState().setDeepResearch(true);
+    setInput(pendingSearch);
+  }, []);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
