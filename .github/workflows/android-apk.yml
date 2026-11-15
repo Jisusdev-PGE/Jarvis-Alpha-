@@ -1,0 +1,58 @@
+name: Build JARVIS ALPHA Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - panchos/jarvis-alpha-integration
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/android-apk.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build-apk:
+    name: Build Android APK (ARM64)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Install Android SDK components
+        run: |
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0" "ndk;27.2.12479018"
+          yes | sdkmanager --licenses
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+      - name: Initialize Tauri Android project
+        working-directory: frontend
+        run: npm run tauri android init -- --ci
+      - name: Build ARM64 APK
+        working-directory: frontend
+        run: npm run tauri android build -- --apk --target aarch64
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: jarvis-alpha-android-arm64
+          path: frontend/src-tauri/gen/android/app/build/outputs/apk/**/*.apk
+          if-no-files-found: error
+          retention-days: 14
