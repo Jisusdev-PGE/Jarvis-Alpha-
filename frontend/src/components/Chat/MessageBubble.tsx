@@ -9,6 +9,7 @@ import { Copy, Check } from 'lucide-react';
 import { AudioPlayer } from './AudioPlayer';
 import { ToolCallCard } from './ToolCallCard';
 import { ResearchTimeline } from './ResearchTimeline';
+import { ResearchImageGallery } from './ResearchImageGallery';
 import { rehypeCitations } from '../../lib/rehype-citations';
 import { XRayFooter } from './XRayFooter';
 import { SpeakMessageButton } from './SpeakMessageButton';
@@ -173,6 +174,11 @@ export function MessageBubble({ message, isLive = false }: Props) {
           </ReactMarkdown>
         </div>
       )}
+
+      {message.isResearch && (message.researchTraces?.length ?? 0) > 0 &&
+        message.researchTraces?.every((trace) => trace.status === 'complete') && (
+          <ResearchImageGallery traces={message.researchTraces ?? []} />
+        )}
 
       {/* Footer: copy + read aloud + x-ray */}
       <div className="flex items-center gap-2 mt-1.5">
